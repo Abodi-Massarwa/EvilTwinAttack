@@ -1,0 +1,6 @@
+iwconfig
+sudo ifconfig wlxc83a35c2e0bc down
+sudo iwconfig wlxc83a35c2e0bc mode monitor
+sudo ifconfig wlxc83a35c2e0bc up
+iwconfig
+tcpdump -i wlxc83a35c2e0bc
